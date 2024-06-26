@@ -5,6 +5,11 @@ using UnityEngine;
 //Скрипт управління камерою
 public class CameraScript : MonoBehaviour
 {
+    [SerializeField] private float zoomSpeed = 10f; // Скорость зума
+    [SerializeField] private float minDistance = 2f; // Минимальное расстояние до объекта
+    [SerializeField] private float maxDistance = 15f; // Максимальное расстояние до объекта
+
+
     private GameObject ball; //посилання на об'єкт на сцені (персонаж)
     private Vector3 offset; //зміщення камери відносно персонажу
     private Vector3 mAngles; //кути, накопичені рухом миші
@@ -27,6 +32,16 @@ public class CameraScript : MonoBehaviour
 
         if (mAngles.y > 360) mAngles.y -= 360;
         if (mAngles.y < 0) mAngles.y += 360;
+
+        // Обработка зума
+        float scrollInput = Input.GetAxis("Mouse ScrollWheel");
+        if (scrollInput != 0)
+        {
+            float distance = offset.magnitude;
+            distance -= scrollInput * zoomSpeed;
+            distance = Mathf.Clamp(distance, minDistance, maxDistance);
+            offset = offset.normalized * distance;
+        }
     }
 
     void LateUpdate() //Вплив на камеру краще робити у LateUpdat
